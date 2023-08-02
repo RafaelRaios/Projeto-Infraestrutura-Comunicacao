@@ -19,4 +19,3 @@ for file in files:
             for i in range(0, len(dataFile), buffer_size):
                 clientSocket.sendto(dataFile[i:i+buffer_size], (serverName, serverPort))  # Send file data
         break
-
