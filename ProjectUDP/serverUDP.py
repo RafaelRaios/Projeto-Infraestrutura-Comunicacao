@@ -15,7 +15,11 @@ print("The server is ready to receive")
 # Função para receber arquivos, primeiro recebe o nome do arquivo e depois o conteúdo, além de renomear o arquivo
 while True:
     filename, clientAddress = serverSocket.recvfrom(buffer_size)  # Recebe o nome do arquivo
+    
     filename = filename.decode()
+    
+    print(type(filename))
+    
     if filename == "udp_sending.txt":
         time.sleep(1)
         os.rename("udp_sending.txt", "udp_sent.txt")
@@ -24,7 +28,17 @@ while True:
         time.sleep(1)
         os.rename("udp_sending.jpg", "udp_sent.jpg")
         filename = "udp_sent.jpg"
-    while True:
+        
+    # verifica o numero de envios necessarios, levando em consideracao
+    # o tamanho do buffer
+    with open(filename, 'rb') as file:
+        content = file.read()
+        count = (len(content)//buffer_size) + 1
+        
+    print(count)
+        
+    # faz *count* iterações para receber o arquivo
+    for i in range(count):
         f, clientAddress = serverSocket.recvfrom(buffer_size)  # Recebe o conteúdo do arquivo
         if filename.endswith('.txt'):
             f = f.decode()
@@ -33,14 +47,18 @@ while True:
             
             f = f.upper()
             
+            with open(filename, 'r') as file:
+                count = (len(filename)//buffer_size) + 1
             with open(filename, 'w') as file:
                 file.write(f)
                 break
-            
+    
+    # devolve o nome modificado para o cliente
     serverSocket.sendto(filename.encode(), clientAddress)
     
     if type(f) != bytes:
         f = f.encode() 
-        
-    for i in range(0, len(f), buffer_size):
+    
+    # devolve a file para o cliente em *count* partes
+    for i in range(count):
                 serverSocket.sendto(f[i:i+buffer_size], clientAddress)
