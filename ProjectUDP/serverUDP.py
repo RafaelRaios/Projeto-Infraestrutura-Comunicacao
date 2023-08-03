@@ -47,8 +47,6 @@ while True:
             
             f = f.upper()
             
-            with open(filename, 'r') as file:
-                count = (len(filename)//buffer_size) + 1
             with open(filename, 'w') as file:
                 file.write(f)
                 break
@@ -61,7 +59,7 @@ while True:
     
     # devolve a file para o cliente em *count* partes
     for i in range(count):
-                serverSocket.sendto(f[i:i+buffer_size], clientAddress)
+        serverSocket.sendto(f[i:i+buffer_size], clientAddress)
     break
 
 serverSocket.close() #Fechamento do socket
