@@ -2,7 +2,7 @@ from socket import *
 import os
 
 serverName = "localhost" #Servidor local
-serverPort = 12000 #Porta do servidor
+serverPort = 12002 #Porta do servidor
 
 buffer_size = 1024 #Tamanho do buffer indicado no projeto (1KB)
 
@@ -35,3 +35,5 @@ print(modified_filename)
 for i in range(count):
     mc_part, serverAddress = clientSocket.recvfrom(buffer_size)
     print(mc_part)
+    
+clientSocket.close() #Fechamento do socket

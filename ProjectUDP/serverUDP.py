@@ -3,7 +3,7 @@ import os
 import time
 
 # Mesma lógica do cliente, porém agora o servidor recebe o arquivo e o renomeia
-serverPort = 12000
+serverPort = 12002
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 
 buffer_size = 1024
@@ -62,3 +62,6 @@ while True:
     # devolve a file para o cliente em *count* partes
     for i in range(count):
                 serverSocket.sendto(f[i:i+buffer_size], clientAddress)
+    break
+
+serverSocket.close() #Fechamento do socket
