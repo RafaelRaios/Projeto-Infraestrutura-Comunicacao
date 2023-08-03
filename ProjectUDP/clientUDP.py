@@ -19,4 +19,12 @@ for file in files:
             for i in range(0, len(dataFile), buffer_size):
                 clientSocket.sendto(dataFile[i:i+buffer_size], (serverName, serverPort))  # Send file data
         break
+    
+# recebendo file modificada do servidor
 
+modified_filename, serverAddress = clientSocket.recvfrom(buffer_size)
+modified_filename = modified_filename.decode()
+
+print(modified_filename)
+
+modified_content, serverAddress = clientSocket.recvfrom(buffer_size)
