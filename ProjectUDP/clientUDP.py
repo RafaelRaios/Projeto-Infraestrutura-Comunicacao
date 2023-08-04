@@ -1,4 +1,5 @@
 from socket import *
+import time
 import os
 
 serverName = "localhost" #Servidor local
@@ -19,3 +20,41 @@ for file in files:
             for i in range(0, len(dataFile), buffer_size):
                 clientSocket.sendto(dataFile[i:i+buffer_size], (serverName, serverPort))  # Send file data
         break
+<<<<<<< Updated upstream
+=======
+
+    
+# recebendo file modificada do servidor
+
+modified_filename, serverAddress = clientSocket.recvfrom(buffer_size)
+modified_filename = modified_filename.decode()
+
+print(modified_filename)
+
+# recebe (em *count* partes) o arquivo modificado
+received_file = b''
+for i in range(int.from_bytes(count, byteorder='big')):
+    mc_part, serverAddress = clientSocket.recvfrom(buffer_size)
+    received_file += mc_part
+    
+print(received_file)
+
+    
+if modified_filename == "udp_sent.txt":
+    time.sleep(2)
+    with open("udp_received.txt", "w") as arquivo:
+        part = received_file.decode()
+        arquivo.write(part)
+        print("Recebido")
+            
+    
+    
+elif modified_filename == "udp_sent.jpg":
+    time.sleep(0.2)
+    with open("udp_received.jpg", "w") as arquivo:
+        arquivo.write(received_file)
+        print("Recebido")
+    
+    
+clientSocket.close() #Fechamento do socket
+>>>>>>> Stashed changes
