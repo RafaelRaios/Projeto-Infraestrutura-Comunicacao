@@ -14,3 +14,9 @@
 - Caso tenha escolhido o arquivo texto, além da modificação de nome do arquivo, também sera mostrado o conteúdo do mesmo
 - A imagem possui um tamanho maior, para demonstrar que caso o arquivo seja maior que o buffer, seja mandado em partes para o servidor e em seguida retornado
 #
+
+## Command Line Prints
+O terminal do client printa a *datafile* antes do envio para o server, o nome do arquivo modificado e a *datafile* recebida pelo server.
+
+O terminal do server printa o tipo do nome da file (=> função de debug), o número de iteracoes
+para receber o arquivo completo e, por fim, a *datafile* que será retornada ao client.
