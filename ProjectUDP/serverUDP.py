@@ -19,7 +19,19 @@ while True:
     filename = filename.decode()
     
     print(type(filename))
-    
+        
+    # recebe o numero da quantidade de envios
+    count, clientAddress = serverSocket.recvfrom(4)
+    count = int.from_bytes(count, byteorder='big')
+        
+    print(count)
+        
+    # faz *count* iterações para receber o arquivo
+    file = b''
+    for i in range(count):
+        f, clientAddress = serverSocket.recvfrom(buffer_size)  # Recebe o conteúdo do arquivo
+        file += f
+        
     if filename == "udp_sending.txt":
         time.sleep(1)
         os.rename("udp_sending.txt", "udp_sent.txt")
@@ -29,34 +41,15 @@ while True:
         os.rename("udp_sending.jpg", "udp_sent.jpg")
         filename = "udp_sent.jpg"
         
-    # verifica o numero de envios necessarios, levando em consideracao
-    # o tamanho do buffer
-    with open(filename, 'rb') as file:
-        content = file.read()
-        count = (len(content)//buffer_size) + 1
-        
-    print(count)
-        
-    # faz *count* iterações para receber o arquivo
-    for i in range(count):
-        f, clientAddress = serverSocket.recvfrom(buffer_size)  # Recebe o conteúdo do arquivo
-        if filename.endswith('.txt'):
-            f = f.decode()
-            
-            # modificando conteúdo da file ('.upper()' em caso de file '.txt')
-            
-            f = f.upper()
-            
-            with open(filename, 'w') as file:
-                file.write(f)
-                break
-    
     # devolve o nome modificado para o cliente
     serverSocket.sendto(filename.encode(), clientAddress)
     
     if type(f) != bytes:
-        f = f.encode() 
+        file = file.encode() 
     
     # devolve a file para o cliente em *count* partes
     for i in range(count):
-        serverSocket.sendto(f[i:i+buffer_size], clientAddress)
+        start = i*1024
+        serverSocket.sendto(file[start:start+buffer_size], clientAddress)
+        
+    print(file)

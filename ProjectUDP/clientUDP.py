@@ -16,11 +16,15 @@ for file in files:
         clientSocket.sendto(file.encode(), (serverName, serverPort))  # Send filename
         with open(file, "rb") as f:  # Open file in binary mode
             dataFile = f.read()
-            count=0
+            
+            print(dataFile)
+            
+            count = (len(dataFile) // buffer_size) + 1
+            count = count.to_bytes(4, byteorder='big')
+            clientSocket.sendto(count, (serverName, serverPort))
+            
             for i in range(0, len(dataFile), buffer_size):
                 clientSocket.sendto(dataFile[i:i+buffer_size], (serverName, serverPort))  # Send file data
-                count+=1
-            print(count)
         break
 
     
@@ -32,6 +36,9 @@ modified_filename = modified_filename.decode()
 print(modified_filename)
 
 # recebe (em *count* partes) o arquivo modificado
-for i in range(count):
+received_file = b''
+for i in range(int.from_bytes(count, byteorder='big')):
     mc_part, serverAddress = clientSocket.recvfrom(buffer_size)
-    print(mc_part)
+    received_file += mc_part
+    
+print(received_file)
