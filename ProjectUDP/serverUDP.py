@@ -3,7 +3,7 @@ import os
 import time
 
 # Mesma lógica do cliente, porém agora o servidor recebe o arquivo e o renomeia
-serverPort = 12000
+serverPort = 12002
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 
 buffer_size = 1024
