@@ -1,4 +1,5 @@
 from socket import *
+import time
 import os
 
 serverName = "localhost" #Servidor local
@@ -42,5 +43,21 @@ for i in range(int.from_bytes(count, byteorder='big')):
     received_file += mc_part
     
 print(received_file)
+
+if modified_filename == "udp_sent.txt":
+    time.sleep(2)
+    with open("udp_received.txt", "w") as arquivo:
+        part = received_file.decode()
+        arquivo.write(part)
+        print("Recebido")
+            
     
+    
+elif modified_filename == "udp_sent.jpg":
+    time.sleep(2)
+    with open("udp_received.jpg", "w") as arquivo:
+        arquivo.write(received_file)
+        print("Recebido")
+    
+
 clientSocket.close() #Fechamento do socket

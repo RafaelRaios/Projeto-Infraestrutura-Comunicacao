@@ -34,11 +34,22 @@ while True:
         
     if filename == "udp_sending.txt":
         time.sleep(1)
-        os.rename("udp_sending.txt", "udp_sent.txt")
+        
+        with open("udp_sent.txt", "w") as arquivo:
+            part = file.decode()
+            arquivo.write(part)
+            print("Recebido")
+        
         filename = "udp_sent.txt"
+        
     elif filename == "udp_sending.jpg":
         time.sleep(1)
-        os.rename("udp_sending.jpg", "udp_sent.jpg")
+
+        with open("udp_sent.jpg", "w") as arquivo:
+            arquivo.write(file)
+            print("Recebido")
+    
+        
         filename = "udp_sent.jpg"
         
     # devolve o nome modificado para o cliente
