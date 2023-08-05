@@ -82,10 +82,10 @@ while True:
     
     # devolve o arquivo texto para o cliente
     else:
-        if type(f) != bytes:
-            file = file.encode()
+        file = file.decode().upper().encode()  # Convert the text to uppercase
         for i in range(count):
             start = i*1024
             serverSocket.sendto(file[start:start+buffer_size], clientAddress)
-
     break
+
+serverSocket.close() # Fecha o socket
