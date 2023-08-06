@@ -11,10 +11,22 @@ buffer_size = 1024
 
 serverSocket.bind(('', serverPort)) # Associa o socket a porta do servidor
 
-print("The server is ready to receive")
-
 # Função para receber arquivos, primeiro recebe o nome do arquivo e depois o conteúdo, além de renomear o arquivo
 while True:
+    quit = False
+    while(1):    
+        command = input('send/quit: ')
+        if command == 'send':
+            print("The server is ready to receive")
+            break
+        elif command == 'quit':
+            quit = True
+            break
+        else:
+            print('digite "send" para enviar um arquivo, ou "quit" para encerrar conexão')
+    
+    if quit: break
+    
     filename, clientAddress = serverSocket.recvfrom(buffer_size)  # Recebe o nome do arquivo
     
     filename = filename.decode()
@@ -44,11 +56,6 @@ while True:
                     break
 
             print("Recebido")
-        
-        # Feature opcional
-        with open("udp_sent.jpg", 'rb') as arquivo:
-            im = Image.open(arquivo)
-            im.show()
         
     else:
         for i in range(count):
@@ -86,6 +93,5 @@ while True:
         for i in range(count):
             start = i*1024
             serverSocket.sendto(file[start:start+buffer_size], clientAddress)
-    break
 
 serverSocket.close() # Fecha o socket

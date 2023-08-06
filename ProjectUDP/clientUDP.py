@@ -38,30 +38,18 @@ modified_filename = modified_filename.decode()
 
 print(modified_filename)
 
-# recebe (em *count* partes) o arquivo modificado
-
-
 if modified_filename == "udp_sent.jpg":  # Recebe a imagem
         
         time.sleep(2)        
         with open("udp_sent_back.jpg", 'wb') as arquivo2:
-
-            #data, clientAddress = serverSocket.recvfrom(1024)
             for i in range(count):
                 data, serverAddress = clientSocket.recvfrom(1024)
                 if data:
-                    #file += data
                     arquivo2.write(data)
-                    #data, clientAddress = serverSocket.recvfrom(1024)
                 else:
                     break
 
             print("Recebido")
-        
-        # Feature opcional
-        with open("udp_sent_back.jpg", 'rb') as arquivo2:
-            im = Image.open(arquivo2)
-            im.show()
 
 
 else: # Recebe a o arquivo .txt
@@ -72,7 +60,5 @@ else: # Recebe a o arquivo .txt
             part = mc_part.decode()
             arquivo.write(part)
             print("Recebido pelo cliente")
-            
-    print(mc_part)
     
 clientSocket.close() #Fechamento do socket
