@@ -19,11 +19,7 @@ for file in files:
         clientSocket.sendto(file.encode(), (serverName, serverPort))  # Send filename
         with open(file, "rb") as f:  # Open file in binary mode
             dataFile = f.read()
-           
-            for i in range(0, len(dataFile), buffer_size):
-                count+=1
-            count_bytes = count.to_bytes(4, byteorder='big')
-            clientSocket.sendto(count_bytes, (serverName, serverPort))
+            count=0
             for i in range(0, len(dataFile), buffer_size):
                 count+=1
             count_bytes = count.to_bytes(4, byteorder='big')
@@ -64,7 +60,5 @@ else: # Recebe a o arquivo .txt
             part = mc_part.decode()
             arquivo.write(part)
             print("Recebido pelo cliente")
-            
-    print(mc_part)
     
 clientSocket.close() #Fechamento do socket
