@@ -56,4 +56,4 @@ while True:
         data = data.decode().upper().encode()
         send_back_file(server_socket, "udp_sent.txt", data, client_address, buffer_size)
 
-    server_socket.close()
+server_socket.close()
