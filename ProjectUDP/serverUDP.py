@@ -1,6 +1,5 @@
 from socket import *
 from PIL import Image
-import time
 
 # Função para receber arquivos do cliente
 def receive_file(server_socket, buffer_size):
@@ -27,7 +26,7 @@ def send_back_file(server_socket, filename, data, client_address, buffer_size):
             server_socket.sendto(data[i:i+buffer_size], client_address)
     print("Mandado de volta para o cliente")
 
-server_port = 12002
+server_port = 12000
 buffer_size = 1024
 
 # Criação do socket do servidor e associação à porta

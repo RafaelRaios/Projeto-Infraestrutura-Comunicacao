@@ -1,7 +1,6 @@
 from socket import *
 from PIL import Image
 import os
-import time
 
 # Função para enviar arquivos ao servidor
 def send_file(client_socket, filename, server_address, buffer_size):
@@ -59,7 +58,7 @@ def receive_modified_file(client_socket, original_filename, buffer_size, num_chu
 
 # Configurações do servidor e porta
 server_name = "localhost"
-server_port = 12002
+server_port = 12000
 buffer_size = 1024
 
 # Criação do socket do cliente
