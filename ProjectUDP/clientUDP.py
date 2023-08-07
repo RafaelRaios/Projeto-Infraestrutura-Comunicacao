@@ -3,12 +3,12 @@ from PIL import Image
 import os
 
 # Função para enviar arquivos ao servidor
-def send_file(client_socket, filename, server_address, buffer_size):
-    # Envia o nome do arquivo para o servidor
-    client_socket.sendto(filename.encode(), server_address)
+def send_file(client_socket, _file, server_address, buffer_size):
+    # Envia o arquivo para o servidor
+    client_socket.sendto(_file.encode(), server_address)
     
     # Abre o arquivo em modo binário para leitura
-    with open(filename, "rb") as f:
+    with open(_file, "rb") as f:
         data_file = f.read()
         
         # Calcula o número de partes (chunks) que o arquivo será dividido para envio
@@ -23,13 +23,13 @@ def send_file(client_socket, filename, server_address, buffer_size):
     return num_chunks
 
 # Função para receber o arquivo modificado do servidor
-def receive_modified_file(client_socket, original_filename, buffer_size, num_chunks):
+def receive_modified_file(client_socket, original_file, buffer_size, num_chunks):
     print(f"Esperando {num_chunks} partes do servidor...")
     
     # Verifica se o arquivo original é uma imagem
-    if original_filename.endswith('.jpg'):
-        expected_filename = "udp_sent_back.jpg"
-        with open(expected_filename, 'wb') as file:
+    if original_file.endswith('.jpg'):
+        expected_file = "udp_sent_back.jpg"
+        with open(expected_file, 'wb') as file:
             # Recebe o arquivo em partes e escreve no disco
             for _ in range(num_chunks):
                 data, _ = client_socket.recvfrom(buffer_size)
@@ -38,12 +38,12 @@ def receive_modified_file(client_socket, original_filename, buffer_size, num_chu
         print("Recebido")
         
         # Mostra a imagem recebida
-        with open(expected_filename, 'rb') as file:
+        with open(expected_file, 'rb') as file:
             im = Image.open(file)
             im.show()
     else:
         # Caso o arquivo original não seja uma imagem, trata como texto
-        expected_filename = "udp_sent_back.txt"
+        expected_file = "udp_sent_back.txt"
         received_text = ''
         
         # Recebe o arquivo em partes e concatena o texto
@@ -52,7 +52,7 @@ def receive_modified_file(client_socket, original_filename, buffer_size, num_chu
             received_text += data.decode()
 
         # Escreve o texto recebido no disco
-        with open(expected_filename, 'w') as file:
+        with open(expected_file, 'w') as file:
             file.write(received_text)
         print("Recebido pelo cliente")
 
