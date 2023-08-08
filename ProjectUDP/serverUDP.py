@@ -1,97 +1,70 @@
 from socket import *
 from PIL import Image
-import time
 
-# Mesma lógica do cliente, porém agora o servidor recebe o arquivo e o renomeia
-serverPort = 12002
-serverSocket = socket(AF_INET, SOCK_DGRAM)
-serverName = "localhost"
+# Função para receber arquivos do cliente
+def receive_file(server_socket, buffer_size):
+    # Recebe o arquivo do cliente
+    _file, client_address = server_socket.recvfrom(buffer_size)
+    _file = _file.decode()
+    
+    # Recebe o número de partes (chunks) em que o arquivo foi dividido
+    num_chunks, _ = server_socket.recvfrom(4)
+    num_chunks = int.from_bytes(num_chunks, byteorder='big')
+    
+    # Recebe o arquivo em partes e concatena
+    data = b''
+    for _ in range(num_chunks):
+        chunk, _ = server_socket.recvfrom(buffer_size)
+        data += chunk
+    return _file, data, client_address
 
+# Função para enviar o arquivo modificado de volta para o cliente
+def send_back_file(server_socket, _file, data, client_address, buffer_size):
+    # Lê e envia o arquivo em partes para o cliente
+    with open(_file, 'rb') as f:
+        for i in range(0, len(data), buffer_size):
+            server_socket.sendto(data[i:i+buffer_size], client_address)
+    print("Mandado de volta para o cliente")
+
+server_port = 12000
 buffer_size = 1024
 
-serverSocket.bind(('', serverPort)) # Associa o socket a porta do servidor
+# Criação do socket do servidor e associação à porta
+server_socket = socket(AF_INET, SOCK_DGRAM)
+server_socket.bind(('', server_port))
 
-# Função para receber arquivos, primeiro recebe o nome do arquivo e depois o conteúdo, além de renomear o arquivo
 while True:
     quit = False
     while(1):    
+        # Espera pelo comando do usuário para iniciar ou encerrar
         command = input('send/quit: ')
         if command == 'send':
-            print("The server is ready to receive")
+            print("O servidor está pronto para receber")
             break
         elif command == 'quit':
             quit = True
             break
         else:
-            print('digite "send" para enviar um arquivo, ou "quit" para encerrar conexão')
-    
+            print('Digite "send" para enviar um arquivo, ou "quit" para encerrar conexão')
     if quit: break
-    
-    filename, clientAddress = serverSocket.recvfrom(buffer_size)  # Recebe o nome do arquivo
-    
-    filename = filename.decode()
-    
-    print(type(filename))
-        
-    # recebe o numero da quantidade de envios
-    count, clientAddress = serverSocket.recvfrom(4)
-    count = int.from_bytes(count, byteorder='big')
-        
-    print(count)
-        
-    # faz count iterações para receber o arquivo
-    file = b''
-    if filename == "udp_sending.jpg":
-        time.sleep(2) 
-        filename = "udp_sent.jpg"     
-        with open("udp_sent.jpg", 'wb') as arquivo:
-            
-            for i in range(count):
-                data, clientAddress = serverSocket.recvfrom(1024)
-                if data:
-                    
-                    arquivo.write(data)
-                    #data, clientAddress = serverSocket.recvfrom(1024)
-                else:
-                    break
+                  
+    # Recebe o arquivo do cliente
+    _file, data, client_address = receive_file(server_socket, buffer_size)
 
-            print("Recebido")
-        
-    else:
-        for i in range(count):
-            f, clientAddress = serverSocket.recvfrom(buffer_size)  # Recebe o conteúdo do arquivo
-            file += f
-        
-    
-    if filename == "udp_sending.txt":
-        time.sleep(1)
-        
-        with open("udp_sent.txt", "w") as arquivo:
-            part = file.decode()
-            arquivo.write(part)
-            print("Recebido")
-        
-        filename = "udp_sent.txt"
-        
-    # devolve o nome modificado para o cliente
-    serverSocket.sendto(filename.encode(), clientAddress)
+    # Verifica o tipo de arquivo recebido e processa de acordo
+    if _file == "udp_sending.jpg":
+        with open("udp_sent.jpg", 'wb') as file:
+            file.write(data)
+        with open("udp_sent.jpg", 'rb') as file:
+            im = Image.open(file)
+            im.show()
+        send_back_file(server_socket, "udp_sent.jpg", data, client_address, buffer_size)
+    elif _file == "udp_sending.txt":
+        with open("udp_sent.txt", "w") as file:
+            file.write(data.decode())
+        # Converte o texto para maiúsculas
+        data = data.decode().upper().encode()
+        send_back_file(server_socket, "udp_sent.txt", data, client_address, buffer_size)
 
-    # Devolve a imagem para  o cliente
-    if filename == "udp_sent.jpg":
-        
-        with open("udp_sent.jpg", 'rb') as f:
-            dataFile = f.read()
-            count = 0
-            for i in range(0, len(dataFile), buffer_size):
-                serverSocket.sendto(dataFile[i:i+buffer_size], clientAddress)  # Send back image
-                count+=1
-            print("Enviado")
-    
-    # devolve o arquivo texto para o cliente
-    else:
-        file = file.decode().upper().encode()  # Convert the text to uppercase
-        for i in range(count):
-            start = i*1024
-            serverSocket.sendto(file[start:start+buffer_size], clientAddress)
-
-serverSocket.close() # Fecha o socket
+# Fecha o socket do servidor
+server_socket.close()
