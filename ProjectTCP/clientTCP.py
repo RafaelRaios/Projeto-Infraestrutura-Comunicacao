@@ -1,6 +1,7 @@
 from socket import *
 from PIL import Image
 import os
+import time
 
 # Função para enviar arquivos ao servidor
 def send_file(client_socket, _file, server_address, buffer_size):
@@ -66,6 +67,13 @@ client_socket = socket(AF_INET, SOCK_DGRAM)
 
 # Lista todos os arquivos no diretório atual
 files = os.listdir()
+
+confirm = False
+
+nome = input("Digite o nome: ")
+
+with open('connect.txt', 'w') as file:
+    
 
 # Procura por arquivos .txt ou .jpg no diretório para enviar ao servidor
 for file in files:

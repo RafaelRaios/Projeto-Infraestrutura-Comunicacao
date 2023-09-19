@@ -1,5 +1,13 @@
 from socket import *
 from PIL import Image
+import time
+
+def send_ack():
+    pass
+
+def receive_ack(server_socket, buffer_size):
+    #recebe o ack
+    _file, data, client_address = receive_file(server_socket, buffer_size)
 
 # Função para receber arquivos do cliente
 def receive_file(server_socket, buffer_size):
@@ -37,7 +45,7 @@ while True:
     quit = False
     while(1):    
         # Espera pelo comando do usuário para iniciar ou encerrar
-        command = input('send/quit: ')
+        command = input('send/quit: ').strip().lower()
         if command == 'send':
             print("O servidor está pronto para receber")
             break
@@ -52,19 +60,15 @@ while True:
     _file, data, client_address = receive_file(server_socket, buffer_size)
 
     # Verifica o tipo de arquivo recebido e processa de acordo
-    if _file == "udp_sending.jpg":
-        with open("udp_sent.jpg", 'wb') as file:
-            file.write(data)
-        with open("udp_sent.jpg", 'rb') as file:
-            im = Image.open(file)
-            im.show()
-        send_back_file(server_socket, "udp_sent.jpg", data, client_address, buffer_size)
-    elif _file == "udp_sending.txt":
-        with open("udp_sent.txt", "w") as file:
-            file.write(data.decode())
+    if _file == "message.txt":
+        print(data.decode())
+        with open("ack.txt", "w") as file:
+            data = file.read()
         # Converte o texto para maiúsculas
         data = data.decode().upper().encode()
-        send_back_file(server_socket, "udp_sent.txt", data, client_address, buffer_size)
-
+        send_back_file(server_socket, "ack.txt", data, client_address, buffer_size)
+    
+    elif _file == "conect.txt":
+        pass
 # Fecha o socket do servidor
 server_socket.close()
